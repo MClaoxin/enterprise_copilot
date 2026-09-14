@@ -4,7 +4,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.user import User
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserUpdate
+
 
 class UserRepository:
     def __init__(self, db: Session):
@@ -18,9 +19,9 @@ class UserRepository:
         return self.db.scalar(stmt)
 
     def list(
-            self,
-            offset: int = 0,
-            limit: int = 20,
+        self,
+        offset: int = 0,
+        limit: int = 20,
     ) -> list[User]:
         stmt = select(User).offset(offset).limit(limit)
         return list(self.db.scalars(stmt).all())
