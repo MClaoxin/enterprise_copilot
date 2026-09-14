@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.workspace import Workspace
 from app.schemas.workspace import WorkspaceCreate, WorkspaceUpdate
 
+
 class WorkspaceRepository:
     def __init__(self, db: Session):
         self.db = db
@@ -14,17 +15,21 @@ class WorkspaceRepository:
         return self.db.get(Workspace, workspace_id)
 
     def list(
-            self,
-            offset: int = 0,
-            limit: int = 20,
+        self,
+        offset: int = 0,
+        limit: int = 20,
     ) -> list[Workspace]:
         stmt = select(Workspace).offset(offset).limit(limit)
         return list(self.db.scalars(stmt).all())
 
+    def get_by_name(self, name: str) -> Workspace | None:
+        stmt = select(Workspace).where(Workspace.name == name)
+        return self.db.scalar(stmt)
+
     def create(self, data: WorkspaceCreate) -> Workspace:
         workspace = Workspace(
             name=data.name,
-            description=data.description,
+            organization_id=data.organization_id,
         )
         self.db.add(workspace)
         self.db.flush()
