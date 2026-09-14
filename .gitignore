@@ -1,18 +1,177 @@
-#Python
+# ============================================================
+# Environment variables / Secrets
+# ============================================================
+
+.env
+.env.*
+!.env.example
+
+# API keys / certificates / secrets
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+
+
+# ============================================================
+# Python / FastAPI
+# ============================================================
+
 __pycache__/
 *.py[cod]
+*$py.class
 
-#Virtual Environment
+# Virtual environments
 .venv/
 venv/
+env/
+ENV/
 
-#IDE
+# Python tooling cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs
+*.log
+
+
+# ============================================================
+# uv
+# ============================================================
+
+# 注意：uv.lock 通常应该提交到 Git
+# 不要添加 uv.lock
+
+
+# ============================================================
+# Node.js / React / Next.js
+# ============================================================
+
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+build/
+
+# Vite
+.vite/
+
+# npm / yarn / pnpm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Package manager caches
+.npm/
+.yarn/cache/
+.pnpm-store/
+
+# TypeScript
+*.tsbuildinfo
+
+
+# ============================================================
+# IDE / Editor
+# ============================================================
+
 .vscode/
 .idea/
 
-#Test/cache
-.pytest_cache/
-.ruff_cache/
+*.swp
+*.swo
+*~
 
-#Env
-.env
+# VS Code local history
+.history/
+
+
+# ============================================================
+# Operating System
+# ============================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+
+# ============================================================
+# Docker
+# ============================================================
+
+# Docker 本身通常没有必须 gitignore 的文件
+# docker-compose.yml / Dockerfile 应提交
+
+
+# ============================================================
+# Database / Runtime Data
+# ============================================================
+
+data/
+postgres_data/
+redis_data/
+
+*.db
+*.sqlite
+*.sqlite3
+
+
+# ============================================================
+# Enterprise Copilot - uploaded documents / generated files
+# ============================================================
+
+uploads/
+tmp/
+temp/
+
+# RAG generated/index data
+vector_store/
+vector_db/
+indexes/
+
+# Local storage
+storage/
+
+
+# ============================================================
+# Test / Coverage
+# ============================================================
+
+coverage/
+coverage.xml
+
+# Playwright
+playwright-report/
+test-results/
+
+
+# ============================================================
+# Misc
+# ============================================================
+
+.cache/
+tmp/
+temp/
