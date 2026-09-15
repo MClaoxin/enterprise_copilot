@@ -26,11 +26,11 @@ class UserRepository:
         stmt = select(User).offset(offset).limit(limit)
         return list(self.db.scalars(stmt).all())
 
-    def create(self, data: UserCreate, password_hash: str) -> User:
+    def create(self, data: UserCreate, hashed_password: str) -> User:
         user = User(
             email=data.email,
-            name=data.name,
-            password_hash=password_hash,
+            full_name=data.full_name,
+            hashed_password=hashed_password,
         )
         self.db.add(user)
         self.db.flush()

@@ -1,21 +1,25 @@
 from uuid import UUID
 
+from sqlalchemy.exc import IntegrityError
+
 from app.core.exceptions import (
     WorkspaceAlreadyExistsError,
     WorkspaceNotFoundError,
 )
-
+from app.db.unit_of_work import UnitOfWork
 from app.models.workspace import Workspace
 from app.repositories.workspace import WorkspaceRepository
 from app.schemas.workspace import WorkspaceCreate, WorkspaceUpdate
 
-class WorkspaceService:
 
+class WorkspaceService:
     def __init__(
         self,
         repository: WorkspaceRepository,
+        unit_of_work: UnitOfWork,
     ):
         self.repository = repository
+        self.unit_of_work = unit_of_work
 
     def get_workspace(
         self,
@@ -35,17 +39,18 @@ class WorkspaceService:
         self,
         data: WorkspaceCreate,
     ) -> Workspace:
-        existing = self.repository.get_by_name(
-            data.name
-        )
+        existing = self.repository.get_by_slug(data.slug)
 
         if existing:
             raise WorkspaceAlreadyExistsError()
 
-        workspace = self.repository.create(data)
-
-        self.repository.db.commit()
-        self.repository.db.refresh(workspace)
+        try:
+            workspace = self.repository.create(data)
+            self.unit_of_work.commit()
+        except IntegrityError as exc:
+            self.unit_of_work.rollback()
+            raise WorkspaceAlreadyExistsError() from exc
+        self.unit_of_work.refresh(workspace)
 
         return workspace
 
@@ -55,7 +60,14 @@ class WorkspaceService:
         data: WorkspaceUpdate,
     ) -> Workspace:
         workspace = self.get_workspace(workspace_id)
-        return self.repository.update(workspace, data)
+        try:
+            workspace = self.repository.update(workspace, data)
+            self.unit_of_work.commit()
+        except IntegrityError as exc:
+            self.unit_of_work.rollback()
+            raise WorkspaceAlreadyExistsError() from exc
+        self.unit_of_work.refresh(workspace)
+        return workspace
 
     def delete_workspace(
         self,
@@ -63,4 +75,4 @@ class WorkspaceService:
     ) -> None:
         workspace = self.get_workspace(workspace_id)
         self.repository.delete(workspace)
-        self.repository.db.commit()
+        self.unit_of_work.commit()

@@ -13,8 +13,9 @@ class FakeUserService:
         self.users = {
             self.user_id: SimpleNamespace(
                 id=self.user_id,
-                name="John Doe",
                 email="john@example.com",
+                full_name="John Doe",
+                is_active=True,
             )
         }
 
@@ -29,7 +30,9 @@ class FakeUserService:
         return self.users[user_id]
 
     def create_user(self, data):
-        user = SimpleNamespace(id=uuid4(), name=data.name, email=data.email)
+        user = SimpleNamespace(
+            id=uuid4(), email=data.email, full_name=data.full_name, is_active=True
+        )
         self.users[user.id] = user
         return user
 
@@ -62,10 +65,10 @@ def test_create_user():
     response = client.post(
         "/api/v1/users",
         json={
-            "name": "Jane Doe",
+            "full_name": "Jane Doe",
             "email": "jane.doe@example.com",
             "password": "secure-password",
         },
     )
     assert response.status_code == 201
-    assert response.json()["name"] == "Jane Doe"
+    assert response.json()["full_name"] == "Jane Doe"

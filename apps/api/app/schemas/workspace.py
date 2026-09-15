@@ -1,5 +1,7 @@
 from uuid import UUID
+
 from pydantic import BaseModel, Field
+
 
 class WorkspaceCreate(BaseModel):
     name: str = Field(
@@ -7,7 +9,10 @@ class WorkspaceCreate(BaseModel):
         max_length=100,
     )
 
-    organization_id: UUID
+    slug: str = Field(
+        min_length=2, max_length=100, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    )
+    owner_id: UUID
 
 
 class WorkspaceUpdate(BaseModel):
@@ -16,9 +21,16 @@ class WorkspaceUpdate(BaseModel):
         min_length=2,
         max_length=100,
     )
+    slug: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=100,
+        pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+    )
 
 
 class WorkspaceResponse(BaseModel):
     id: UUID
     name: str
-    organization_id: UUID 
+    slug: str
+    owner_id: UUID
