@@ -22,14 +22,15 @@ class WorkspaceRepository:
         stmt = select(Workspace).offset(offset).limit(limit)
         return list(self.db.scalars(stmt).all())
 
-    def get_by_name(self, name: str) -> Workspace | None:
-        stmt = select(Workspace).where(Workspace.name == name)
+    def get_by_slug(self, slug: str) -> Workspace | None:
+        stmt = select(Workspace).where(Workspace.slug == slug)
         return self.db.scalar(stmt)
 
     def create(self, data: WorkspaceCreate) -> Workspace:
         workspace = Workspace(
             name=data.name,
-            organization_id=data.organization_id,
+            slug=data.slug,
+            owner_id=data.owner_id,
         )
         self.db.add(workspace)
         self.db.flush()

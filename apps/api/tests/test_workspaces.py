@@ -10,13 +10,14 @@ from app.main import app
 
 class FakeWorkspaceService:
     def __init__(self):
-        self.organization_id = uuid4()
+        self.owner_id = uuid4()
         self.workspace_id = uuid4()
         self.workspaces = {
             self.workspace_id: SimpleNamespace(
                 id=self.workspace_id,
                 name="Demo Workspace",
-                organization_id=self.organization_id,
+                slug="demo-workspace",
+                owner_id=self.owner_id,
             )
         }
 
@@ -56,7 +57,11 @@ def test_get_workspace_not_found():
 def test_create_workspace():
     response = client.post(
         "/api/v1/workspaces",
-        json={"name": "New Workspace", "organization_id": str(service.organization_id)},
+        json={
+            "name": "New Workspace",
+            "slug": "new-workspace",
+            "owner_id": str(service.owner_id),
+        },
     )
 
     assert response.status_code == 201
