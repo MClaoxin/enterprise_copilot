@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.api.routes.auth import router as auth_router
 from app.api.routes.health import router as health_router
 from app.api.routes.user import router as user_router
 from app.api.routes.workspace import router as workspace_router
@@ -14,5 +15,6 @@ app.add_middleware(RequestLoggingMiddleware)
 register_exception_handlers(app)
 
 app.include_router(health_router)
+app.include_router(auth_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
 app.include_router(workspace_router, prefix="/api/v1")

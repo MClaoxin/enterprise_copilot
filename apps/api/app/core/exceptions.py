@@ -46,3 +46,23 @@ class WorkspaceAlreadyExistsError(AppException):
             message="Workspace already exists",
             status_code=409,
         )
+
+
+class InvalidCredentialsError(AppException):
+    def __init__(self):
+        super().__init__("INVALID_CREDENTIALS", "Invalid email or password", 401)
+
+
+class InvalidTokenError(AppException):
+    def __init__(self):
+        super().__init__("INVALID_TOKEN", "Invalid or expired token", 401)
+
+
+class InactiveUserError(AppException):
+    def __init__(self):
+        super().__init__("INACTIVE_USER", "User account is inactive", 403)
+
+
+class WorkspaceForbiddenError(AppException):
+    def __init__(self):
+        super().__init__("WORKSPACE_FORBIDDEN", "Insufficient workspace role", 403)
