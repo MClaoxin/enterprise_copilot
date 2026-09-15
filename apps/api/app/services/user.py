@@ -6,6 +6,7 @@ from app.core.exceptions import (
     UserAlreadyExistsError,
     UserNotFoundError,
 )
+from app.core.security import hash_password
 from app.db.unit_of_work import UnitOfWork
 from app.models.user import User
 from app.repositories.user import UserRepository
@@ -44,8 +45,7 @@ class UserService:
         if existing:
             raise UserAlreadyExistsError()
 
-        # Day 5 暂时表示
-        hashed_password = f"hashed:{data.password}"
+        hashed_password = hash_password(data.password)
 
         try:
             user = self.repository.create(data, hashed_password)

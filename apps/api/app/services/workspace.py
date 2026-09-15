@@ -9,6 +9,7 @@ from app.core.exceptions import (
 from app.db.unit_of_work import UnitOfWork
 from app.models.workspace import Workspace
 from app.repositories.workspace import WorkspaceRepository
+from app.repositories.workspace_member import WorkspaceMemberRepository
 from app.schemas.workspace import WorkspaceCreate, WorkspaceUpdate
 
 
@@ -17,9 +18,11 @@ class WorkspaceService:
         self,
         repository: WorkspaceRepository,
         unit_of_work: UnitOfWork,
+        members: WorkspaceMemberRepository,
     ):
         self.repository = repository
         self.unit_of_work = unit_of_work
+        self.members = members
 
     def get_workspace(
         self,
@@ -32,12 +35,13 @@ class WorkspaceService:
 
         return workspace
 
-    def list_workspaces(self) -> list[Workspace]:
-        return self.repository.list()
+    def list_workspaces(self, user_id: UUID) -> list[Workspace]:
+        return self.repository.list(user_id)
 
     def create_workspace(
         self,
         data: WorkspaceCreate,
+        owner_id: UUID,
     ) -> Workspace:
         existing = self.repository.get_by_slug(data.slug)
 
@@ -45,7 +49,8 @@ class WorkspaceService:
             raise WorkspaceAlreadyExistsError()
 
         try:
-            workspace = self.repository.create(data)
+            workspace = self.repository.create(data, owner_id)
+            self.members.add(workspace.id, owner_id, "owner")
             self.unit_of_work.commit()
         except IntegrityError as exc:
             self.unit_of_work.rollback()

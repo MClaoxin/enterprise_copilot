@@ -12,7 +12,6 @@ class WorkspaceCreate(BaseModel):
     slug: str = Field(
         min_length=2, max_length=100, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
     )
-    owner_id: UUID
 
 
 class WorkspaceUpdate(BaseModel):

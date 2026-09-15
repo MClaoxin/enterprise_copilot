@@ -3,7 +3,11 @@ from uuid import UUID, uuid4
 
 from fastapi.testclient import TestClient
 
-from app.api.deps import get_workspace_service
+from app.api.deps import (
+    get_authorization_service,
+    get_current_user,
+    get_workspace_service,
+)
 from app.core.exceptions import WorkspaceNotFoundError
 from app.main import app
 
@@ -21,7 +25,7 @@ class FakeWorkspaceService:
             )
         }
 
-    def list_workspaces(self):
+    def list_workspaces(self, user_id):
         return list(self.workspaces.values())
 
     def get_workspace(self, workspace_id: UUID):
@@ -29,14 +33,20 @@ class FakeWorkspaceService:
             raise WorkspaceNotFoundError()
         return self.workspaces[workspace_id]
 
-    def create_workspace(self, data):
-        workspace = SimpleNamespace(id=uuid4(), **data.model_dump())
+    def create_workspace(self, data, owner_id):
+        workspace = SimpleNamespace(id=uuid4(), owner_id=owner_id, **data.model_dump())
         self.workspaces[workspace.id] = workspace
         return workspace
 
 
 service = FakeWorkspaceService()
 app.dependency_overrides[get_workspace_service] = lambda: service
+app.dependency_overrides[get_current_user] = lambda: SimpleNamespace(
+    id=service.owner_id
+)
+app.dependency_overrides[get_authorization_service] = lambda: SimpleNamespace(
+    require_role=lambda *args: None
+)
 client = TestClient(app, raise_server_exceptions=False)
 
 
@@ -60,7 +70,6 @@ def test_create_workspace():
         json={
             "name": "New Workspace",
             "slug": "new-workspace",
-            "owner_id": str(service.owner_id),
         },
     )
 
