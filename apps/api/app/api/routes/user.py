@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Response, status
 
 from app.api.deps import UserServiceDep
-from app.schemas.user import UserCreate, UserUpdate, UserResponse
+from app.schemas.user import UserCreate, UserResponse, UserUpdate
 
 router = APIRouter(
     prefix="/users",
